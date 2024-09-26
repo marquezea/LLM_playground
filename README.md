@@ -18,20 +18,23 @@ pip install -r requirements.txt
 
 ## Setting API Keys
 
-This applications invokes LLM APIs from different providers. You must have API KEYs for all the services that you intend to use. The following API KEYs must be set as environment variables in your machine.
+This applications invokes LLM APIs from different providers. You must have API KEYs for all the services that you intend to use. The following API KEYs are used in this project but you can decide which one to use.
+- OPENAI_API_KEY [www.openai.com](https://openai.com/index/openai-api/)
+- ANTHROPIC_API_KEY [Anthropic API](https://support.anthropic.com/en/collections/5370014-anthropic-api-api-console)
+- STABILITY_API_KEY [Stability AI](https://stability.ai/)
+- LEONARDO_API_KEY [Leonardo API](https://leonardo.ai/api/)
+- GEMINI_API_KEY [Google Gemini API](https://ai.google.dev/gemini-api/docs/api-key)
+- MISTRAL_API_KEY [Mistral API](https://docs.mistral.ai/api/)
+- HFINF_API_KEY [Hugging Face API](https://huggingface.co/docs/api-inference/index)
+- GROQ_API_KEY [Groq API](https://console.groq.com/keys)
+
+Below is an explanation of how to setup the environment variables.
 
 ##### 1. Windows:
 - Open Command Prompt or PowerShell.
 - Use the following command to set the environment variable for the current session:
 ```sh
 set OPENAI_API_KEY=<your api key>
-set ANTHROPIC_API_KEY=<your api key>
-set STABILITY_API_KEY=<your api key>
-set LEONARDO_API_KEY=<your api key>
-set GEMINI_API_KEY=<your api key>
-set MISTRAL_API_KEY=<your api key>
-set HFINF_API_KEY=<your api key>
-set GROQ_API_KEY=<your api key>
 ```
 - To make it persistent, add the variable to the system environment variables:
   - Search for "Environment Variables" in the start menu.
@@ -44,24 +47,10 @@ set GROQ_API_KEY=<your api key>
 - Set the environment variable for the current session with:
 ```sh
 export OPENAI_API_KEY=<your api key>
-export ANTHROPIC_API_KEY=<your api key>
-export STABILITY_API_KEY=<your api key>
-export LEONARDO_API_KEY=<your api key>
-export GEMINI_API_KEY=<your api key>
-export MISTRAL_API_KEY=<your api key>
-export HFINF_API_KEY=<your api key>
-export GROQ_API_KEY=<your api key>
 ```
 To make it permanent, add the following line to your shell configuration file (~/.bashrc, ~/.zshrc, etc.):
 ```sh
 export OPENAI_API_KEY=<your api key>
-export ANTHROPIC_API_KEY=<your api key>
-export STABILITY_API_KEY=<your api key>
-export LEONARDO_API_KEY=<your api key>
-export GEMINI_API_KEY=<your api key>
-export MISTRAL_API_KEY=<your api key>
-export HFINF_API_KEY=<your api key>
-export GROQ_API_KEY=<your api key>
 ```
 - Save the file and run source ~/.bashrc (or the equivalent for your shell) to apply the changes.
 
@@ -70,24 +59,10 @@ export GROQ_API_KEY=<your api key>
 - Set the environment variable for the current session:
 ```sh
 export OPENAI_API_KEY=<your api key>
-export ANTHROPIC_API_KEY=<your api key>
-export STABILITY_API_KEY=<your api key>
-export LEONARDO_API_KEY=<your api key>
-export GEMINI_API_KEY=<your api key>
-export MISTRAL_API_KEY=<your api key>
-export HFINF_API_KEY=<your api key>
-export GROQ_API_KEY=<your api key>
 ```
 - To make it permanent, add the following line to your shell configuration file (~/.bash_profile, ~/.zshrc, etc.):
 ```sh
 export OPENAI_API_KEY=<your api key>
-export ANTHROPIC_API_KEY=<your api key>
-export STABILITY_API_KEY=<your api key>
-export LEONARDO_API_KEY=<your api key>
-export GEMINI_API_KEY=<your api key>
-export MISTRAL_API_KEY=<your api key>
-export HFINF_API_KEY=<your api key>
-export GROQ_API_KEY=<your api key>
 ```
 Save the file and run source ~/.bash_profile (or the equivalent for your shell) to apply the changes.
 
