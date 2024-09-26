@@ -1,6 +1,15 @@
 # LLM_playground
 An educational playground for exploring and demonstrating various use cases and concepts of Large Language Models (LLMs). This repository provides examples of utilizing LLM APIs for different tasks, making it easier for developers to integrate LLMs into their projects.
 
+<img src="image-1.png" alt="alt text" width="400" height="auto">
+<img src="image-2.png" alt="alt text" width="400" height="auto">
+<img src="image-3.png" alt="alt text" width="400" height="auto">
+<img src="image-4.png" alt="alt text" width="400" height="auto">
+<img src="image-5.png" alt="alt text" width="400" height="auto">
+<img src="image-6.png" alt="alt text" width="400" height="auto">
+<img src="image-7.png" alt="alt text" width="400" height="auto">
+<img src="image-8.png" alt="alt text" width="400" height="auto">
+
 ## Installation
 
 1. Clone the repository:
