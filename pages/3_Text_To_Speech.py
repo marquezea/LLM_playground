@@ -1,6 +1,5 @@
 import streamlit as st
 import utils as utils
-from pathlib import Path
 from openai import OpenAI
 
 def header():

@@ -1,8 +1,5 @@
 import streamlit as st
 import utils as utils
-from pathlib import Path
-from openai import OpenAI
-import json
 import tiktoken
 import torch
 from transformers import BertTokenizer, BertModel

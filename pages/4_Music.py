@@ -2,7 +2,6 @@ import streamlit as st
 import utils as utils
 import requests
 import os
-import json
 import uuid
 
 music_folder = "./music_files"
