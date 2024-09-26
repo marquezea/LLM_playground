@@ -6,6 +6,7 @@ import json
 
 def header():
     st.subheader("🧐 Text Moderation")
+    st.markdown("##### :red[This program includes a harmful message that is used solely for the purpose of demonstrating the capabilities of the moderation API. The inclusion of this message is in no way intended to promote or endorse harmful or offensive content. All content within this demonstration is artificial and is provided strictly for educational and technical evaluation of moderation tools. Viewer discretion is advised.]")
     st.divider()
 
 def main():
@@ -28,7 +29,7 @@ def main():
         display_voice=False,
         display_voice_speed=False,)
     
-    moderation_text = st.text_area("Write something bad", "I want to kill you.")
+    moderation_text = st.text_area("Write something bad", st.session_state['settings']['moderation']['initial_text'])
     if st.button("Moderate"):
         client = OpenAI()
         response = client.moderations.create(input=moderation_text)

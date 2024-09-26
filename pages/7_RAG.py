@@ -1,9 +1,6 @@
 import streamlit as st
 import utils as utils
-import json
 import pdfplumber
-import os
-import tiktoken
 
 def header():
     st.subheader("↗🦥 RAG")
@@ -41,23 +38,15 @@ utils.display_sidebar(
     display_voice_speed=False,
     display_skills=False)
 
-options = ["Sumarizar documento", "Traduzir documento"]
-options_buttons = ["Sumarizar", "Traduzir"]
+options = [opt['title'] for opt in st.session_state['settings']['summarize_prompts']]
+options_buttons = [opt['button_label'] for opt in st.session_state['settings']['summarize_prompts']]
 extracted_text = ""
-initial_prompts = ["""Você vai atuar como um assistente para entender este DOCUMENTO. Preciso que você analise, fornecendo as seguintes informações:
-a) Qual é o resumo deste documento em um parágrafo?
-b) Quem é o público-alvo deste documento?
-c) Quais são os requisitos de conhecimento para entender este documento?
-d) Que tipo de documento é este?
-e) Quais são os pontos mais importantes em bullets?
-f) Quais conclusões este documento fornece?""",
-"""Você vai traduzir este documento para o português."""]
-action = st.selectbox("Selecione uma ação", options)
+action = st.selectbox("Select an action", options)
 st.markdown(f"### {action} com RAG")
 prompt_index = options.index(action)
-summarize_prompt = st.text_area("Instruções", height=200, value=initial_prompts[prompt_index])
+summarize_prompt = st.text_area("Instructions", height=200, value=st.session_state['settings']['summarize_prompts'][prompt_index]['prompt'])
 uploadForm = st.form('Upload PDF', clear_on_submit=True)
-filename = uploadForm.file_uploader('Selecione um documento', type=['pdf','txt','doc'])
+filename = uploadForm.file_uploader('Select a document', type=['pdf','txt'])
 
 
 if filename is not None:
@@ -72,9 +61,9 @@ if filename is not None:
         count_tokens = utils.countTokens(prompt)
         max_tokens = utils.MODELS[st.session_state.selected_model]['max_tokens']
         if utils.countTokens(prompt) > max_tokens:
-            st.error(f"O modelo {st.session_state.selected_model} suporta ate {max_tokens}, e seu prompt tem {count_tokens} tokens. Selecione um documento menor.")
+            st.error(f"This model  {st.session_state.selected_model} supports up to {max_tokens} tokens. Your prompt has {count_tokens} tokens. Select a smaller document or change to another model.")
         else:
-            st.write(f"O prompt tem {count_tokens} tokens e o modelo suporta ate {max_tokens}.")
+            st.write(f"This prompt will use {count_tokens} tokens and the model supports up to {max_tokens} tokens.")
             client = utils.getLLMClient(st.session_state.selected_model, model_engine)
             response = utils.simplePrompt(st.session_state.selected_model, client, model_engine, prompt)
             utils.updateUsage(st.session_state.selected_model, response)

@@ -3,25 +3,18 @@ import utils as utils
 import requests
 import os
 import json
+import uuid
+
+music_folder = "./music_files"
 
 def clean_string(string):
     return string.replace('\\', '\\\\')
 
 # function to generate a filename based on the music prompt (using Mistral-7B-Instruct-v0.1)
-def generate_filename(music_prompt):
-    model_selection = "Mistral-7B-Instruct-v0.1"
-    filename_gen_prompt = f'Generate a filename for a mp3 file based on the music prompt: {music_prompt}. Just return the filename and nothing else on you answer.'
-    model_engine = [model_key for model_title,model_key in utils.MODELS.items() if model_title == model_selection][0]['model']
-    max_tokens = [model_key for model_title,model_key in utils.MODELS.items() if model_title == model_selection][0]['max_tokens']
-    client = utils.getLLMClient(model_selection, model_engine)
-    response = client.chat_completion(
-        messages=[{"role": "user", "content": filename_gen_prompt}],
-	    max_tokens=max_tokens,
-	    stream=False,
-    )
-    # sanitize the response to get the json string without the escape characters
-    text_json = response.choices[0].message.content.strip().replace('\\', '\\\\')
-    return text_json.replace('"', '') # json_object["filename"]
+def generate_filename():
+    generation = str(uuid.uuid4()).split('-')[0]
+    filename = f"{generation}.mp3"
+    return filename
 
 # function that retrieves the MP3 files from given directory
 def get_mp3_files(directory):
@@ -29,7 +22,6 @@ def get_mp3_files(directory):
     for file in os.listdir(directory):
         if file.endswith(".mp3"):
             mp3_files.append(file)
-    mp3_files.sort(key=lambda x: os.path.getmtime(x), reverse=True)            
     return mp3_files
 
 def save_mp3_to_disk(response_content, filename='output.mp3'):
@@ -63,39 +55,39 @@ def main():
         display_voice=True,
         display_voice_speed=True,)
     
-    music_prompt = st.text_area("Write something that I'll speech for you", "a funky house with 80s hip hop vibes")
+    music_prompt = st.text_area("Write any inpiration message for a music", st.session_state['settings']['music']['initial_text'])
 
     if st.button("Generate Music"):
-        suggested_filename = generate_filename(music_prompt)
+        suggested_filename = generate_filename()
         response = requests.post(
             f"https://api-inference.huggingface.co/models/facebook/musicgen-small",
             headers={
-                "Authorization": "Bearer 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"
+                "Authorization": f"Bearer {os.environ["HFINF_API_KEY"]}"
             },
             data={
                 "input": f"{music_prompt}"
             },
         )
         if response.status_code == 200:
-            save_mp3_to_disk(response.content, filename=suggested_filename.replace("\\", ""))
+            save_mp3_to_disk(response.content, filename=f"{music_folder}/{suggested_filename}")
 
         #st.audio(response.content, format="audio/mp3")
-    previous_mp3_files = get_mp3_files("./")
+    previous_mp3_files = get_mp3_files(music_folder)
     st.markdown("#### :blue[Previous MP3 Files]")
     col1, col2, col3 = st.columns(3)
     for i, audio_file in enumerate(previous_mp3_files):
         if i % 3 == 0:
             with col1:
                 st.write(audio_file)
-                st.audio(audio_file, format="audio/mp3")
+                st.audio(f"{music_folder}/{audio_file}", format="audio/mp3")
         elif i % 3 == 1:
             with col2:
                 st.write(audio_file)
-                st.audio(audio_file, format="audio/mp3")
+                st.audio(f"{music_folder}/{audio_file}", format="audio/mp3")
         else:
             with col3:
                 st.write(audio_file)
-                st.audio(audio_file, format="audio/mp3")
+                st.audio(f"{music_folder}/{audio_file}", format="audio/mp3")
 
 if __name__ == "__main__":
     main()

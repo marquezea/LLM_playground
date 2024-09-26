@@ -4,7 +4,7 @@ import utils as utils
 def header():
     st.subheader("💬 Basic Chat")
     st.divider()
-    clear_button = st.button("Limpar Chat")
+    clear_button = st.button("Clear Chat")
     if clear_button:
         utils.clear_messages()
 

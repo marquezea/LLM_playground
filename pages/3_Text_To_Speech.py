@@ -27,7 +27,7 @@ def main():
         display_voice=True,
         display_voice_speed=True,)
     
-    speech_text = st.text_area("Write something that I'll speech for you", "No reino das máquinas, um brilho a surgir,\nInteligência artificial, a sonhar e a construir.\nCódigos dançam em linhas de luz,\nUm universo de dados, onde a mente reluz.")
+    speech_text = st.text_area("Write something that I'll speech for you", st.session_state['settings']['text_to_speech']['initial_text'])
     if st.button("Speak"):
         client = OpenAI()
         response = client.audio.speech.create(

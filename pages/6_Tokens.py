@@ -68,8 +68,8 @@ def main():
         display_voice=False,
         display_voice_speed=False,)
     
-    sentence = st.text_area("Escreva qualquer coisa para transformar em tokens", "A inteligência artificial transforma a maneira como interagimos com a tecnologia, facilitando tarefas diárias e impulsionando inovações em diversas áreas da vida.")
-    if st.button("Tokens"):
+    sentence = st.text_area("Write anything to convert into tokens", st.session_state['settings']['tokens']['initial_text'])
+    if st.button("Convert to Tokens"):
         tokens_int, tokens_txt = tokenize_and_print(sentence)
         st.markdown(f"### Qtde de Tokens: {len(tokens_int)}")
         st.dataframe(
@@ -79,12 +79,10 @@ def main():
                 "tokenid": st.column_config.TextColumn("Token #"),
                 "tokenstr": st.column_config.TextColumn("Token"),
             })
-    if st.button("Embeddings"):
-        embedding = create_embeddings(sentence)
+    if st.button("Convert to Embeddings"):
+        embeddings = create_embeddings(sentence)
 
-        st.write(embedding)
-
-
+        st.write(embeddings)
 
 if __name__ == "__main__":
     main()

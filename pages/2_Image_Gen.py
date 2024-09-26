@@ -19,6 +19,7 @@ def main():
 
     # display side bar
     utils.display_sidebar(
+        display_skills=False,
         display_model=False,
         display_image_model=True,
         display_max_tokens=False, 
@@ -28,7 +29,7 @@ def main():
         display_verbose=False,
         display_usage=False,)
     
-    image_prompt = st.text_area("Describe the image you want to generate", "Uma sala de aula com alunos animados com a aula de inteligência artificial.")
+    image_prompt = st.text_area("Describe an image", st.session_state['settings']['image_gen']['initial_text'])
     if st.session_state['operation_mode'] == 'sync':
         if st.button("Generate Image"):
             img_model_engine = [model_key for model_title,model_key in utils.IMAGE_MODELS.items() if model_title == st.session_state.selected_img_model][0]['model']
