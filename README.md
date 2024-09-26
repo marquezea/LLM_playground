@@ -90,7 +90,7 @@ Save the file and run source ~/.bash_profile (or the equivalent for your shell) 
 
 To start the application use the following command:
 ```sh
-streamlit run LLM_playground
+streamlit run LLM_playground.py
 ```
 
 ## License
