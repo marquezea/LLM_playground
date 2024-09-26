@@ -201,9 +201,6 @@ def getLLMClient(model, model_engine):
         return genai.GenerativeModel(model_engine)
     elif provider == 'Mistral':
         return MistralClient(api_key=os.environ["MISTRAL_API_KEY"])
-    elif provider == 'AWSBedrock':
-        return boto3.client("bedrock-runtime", region_name="us-west-2")
-        return boto3.Session(profile_name='pythonAutomation').client("bedrock-runtime", region_name="us-west-2")
     elif provider == 'HuggingFace':
         return InferenceClient(
             model_engine,
@@ -260,23 +257,6 @@ def chatCompletion(model, client, model_engine):
                 model=model_engine,
                 messages=mistral_messages
             )
-        elif provider == 'AWSBedrock':
-            messages = st.session_state.messages
-            bedrock_messages = []
-            for message in messages[1:]:
-                bedrock_messages.append({
-                    "role": message['role'],
-                    "content": [{"text": message['content']}]
-                })
-            return client.converse(
-                modelId=model_engine,
-                messages=bedrock_messages,
-                inferenceConfig={
-                    "maxTokens": st.session_state['max_tokens'],
-                    "temperature": st.session_state['temperature']
-                },
-                additionalModelRequestFields={}
-            )
         elif provider == 'HuggingFace':
             return client.chat_completion(
                 messages=st.session_state.messages[1:],
@@ -323,26 +303,6 @@ def simplePrompt(model, client, model_engine, prompt):
                 model=model_engine,
                 messages=mistral_messages
             )
-        elif provider == 'AWSBedrock':
-            native_request = {
-                "prompt": prompt,
-                "max_gen_len": st.session_state['max_tokens'],
-                "temperature": st.session_state['temperature'],
-            }
-            request = json.dumps(native_request)
-
-            return client.invoke_model(modelId=model_engine, body=request)
-
-            #bedrock_messages = [{"role": "user", "content": [{"text": prompt}]}]
-            #return client.converse(
-            #    modelId=model_engine,
-            #    messages=bedrock_messages,
-            #    inferenceConfig={
-            #        "maxTokens": st.session_state['max_tokens'],
-            #        "temperature": st.session_state['temperature']
-            #    },
-            #    additionalModelRequestFields={}
-            #)
         elif provider == 'HuggingFace':
             return client.chat_completion(
                 messages=[{"role": "user", "content": prompt}],
@@ -371,9 +331,6 @@ def getResponse(model, response):
         return response.text
     elif provider == 'Mistral':
         return response.choices[0].message.content
-    elif provider == 'AWSBedrock':
-        return "x"
-        return response["output"]["message"]["content"][0]["text"]
     elif provider == 'HuggingFace':
         return response.choices[0].message.content
     elif provider == 'Groq':
@@ -401,11 +358,6 @@ def updateUsage(model, response):
     elif provider == 'Mistral':
         completion = response.usage.completion_tokens
         prompt = response.usage.prompt_tokens
-    elif provider == 'AWSBedrock':
-        completion = 1
-        prompt = 2
-        #completion = response['usage']['outputTokens']
-        #prompt = response['usage']['inputTokens']
     elif provider == 'HuggingFace':
         completion = response['usage']['completion_tokens']
         prompt = response['usage']['prompt_tokens']
