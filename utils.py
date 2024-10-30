@@ -145,7 +145,7 @@ def generateImage(model, client, model_engine, prompt, resolution, quality):
         return requests.post(
             f"https://api.stability.ai/v2beta/stable-image/generate/sd3",
             headers={
-                "authorization": f"Bearer {os.environ["STABILITY_API_KEY"]}",
+                "authorization": f"Bearer {os.environ.get('STABILITY_API_KEY','{your_key_here}')}",
                 "accept": "image/*"
             },
             files={"none": ''},
@@ -162,7 +162,7 @@ def generateImage(model, client, model_engine, prompt, resolution, quality):
             headers={
                 "accept": "application/json",
                 "content-type": "application/json",
-                "authorization": f"Bearer {os.environ["LEONARDO_API_KEY"]}"
+                "authorization": f"Bearer {os.environ.get('LEONARDO_API_KEY','{your_key_here}')}"
             },
             json={
                 "alchemy": True,
@@ -197,17 +197,17 @@ def getLLMClient(model, model_engine):
     elif provider == 'Anthropic':
         return anthropic.Anthropic()
     elif provider == 'Google':
-        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+        genai.configure(api_key=os.environ.get("GEMINI_API_KEY","{your_key_here}"))
         return genai.GenerativeModel(model_engine)
     elif provider == 'Mistral':
-        return MistralClient(api_key=os.environ["MISTRAL_API_KEY"])
+        return MistralClient(api_key=os.environ.get("MISTRAL_API_KEY","{your_key_here}"))
     elif provider == 'HuggingFace':
         return InferenceClient(
             model_engine,
-            token=os.environ["HFINF_API_KEY"],
+            token=os.environ.get("HFINF_API_KEY","{your_key_here}"),
         )
     elif provider == 'Groq':
-        return Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        return Groq(api_key=os.environ.get("GROQ_API_KEY","{your_key_here}"))
     elif provider == 'localhost':
         return OllamaLLM(
             model=model_engine,
