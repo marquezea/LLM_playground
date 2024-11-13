@@ -63,7 +63,7 @@ def main():
                     f"https://cloud.leonardo.ai/api/rest/v1/generations/{st.session_state['image_id']}",
                     headers={
                         "accept": "application/json",
-                        "authorization": f"Bearer {os.environ["LEONARDO_API_KEY"]}"
+                        "authorization": f"Bearer {os.environ.get('LEONARDO_API_KEY','{your_key_here}')}"
                     }
                 )
                 if response.status_code == 200:

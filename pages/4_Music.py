@@ -61,7 +61,7 @@ def main():
         response = requests.post(
             f"https://api-inference.huggingface.co/models/facebook/musicgen-small",
             headers={
-                "Authorization": f"Bearer {os.environ["HFINF_API_KEY"]}"
+                "Authorization": f"Bearer {os.environ.get('HFINF_API_KEY','{your_key_here}')}"
             },
             data={
                 "input": f"{music_prompt}"
