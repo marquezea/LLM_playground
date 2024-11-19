@@ -46,7 +46,7 @@ if filename is not None:
         st.image(filename)
         base64_image = encode_image(filename)
         vision_model_engine = [vision_model_key for vision_model_title,vision_model_key in utils.VISION_MODELS.items() if vision_model_title == st.session_state.selected_vision_model][0]['model']
-        client = utils.getVisionClient(st.session_state.selected_vision_model)
+        client = utils.getVisionClient(st.session_state.selected_vision_model, vision_model_engine)
         utils.verbose('vision model engine',vision_model_engine)
     
         try:

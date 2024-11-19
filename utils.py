@@ -29,6 +29,13 @@ VISION_MODELS = {
         'price_in_token': 0.005,
         'price_out_token': 0.015,
         'max_tokens': 128000
+    },
+    "HF Llama 3.2 11B-Vision-Instruct":{
+        'model': "meta-llama/Llama-3.2-11B-Vision-Instruct",
+        'provider':'HuggingFace',
+        'price_in_token': 0.0003,
+        'price_out_token': 0.0006,
+        'max_tokens': 1024
     }
 }
 
@@ -207,10 +214,15 @@ def getImageResponse(model, response):
     else:
         raise ValueError(f"Provider {provider} not supported")
 
-def getVisionClient(vision_model):
+def getVisionClient(vision_model, model_engine):
     provider = VISION_MODELS[vision_model]['provider']
     if provider == 'OpenAI':
         return OpenAI()
+    elif provider == 'HuggingFace':
+        return InferenceClient(
+            model_engine,
+            api_key=os.environ.get("HFINF_API_KEY","{your_key_here}")
+        )
     else:
         raise ValueError(f"Provider {provider} not supported")
 
@@ -264,14 +276,39 @@ def vision(client, vision_model, vision_model_engine, base64_image, vision_promp
                     }
                 ],
             )
+        elif provider == 'HuggingFace':
+            return client.chat_completion(
+                model=vision_model_engine,
+                messages=[
+                    {
+                    "role": "user",
+                    "content": [
+                        {
+                        "type": "text",
+                        "text": vision_prompt,
+                        },
+                        {
+                        "type": "image_url",
+                        "image_url": {
+                            "url":  f"data:image/jpeg;base64,{base64_image}"
+                        },
+                        },
+                    ],
+                    }
+                ],
+                max_tokens=st.session_state['max_tokens'],
+                stream=False,
+            )
         else:
             raise ValueError(f"Provider {provider} not supported") 
     except Exception as e:
         raise ValueError(f"Error invoking '{provider}' LLM VISION API. {e}")
 
 def getVisionResponse(model, response):
-    provider = MODELS[model]['provider']
+    provider = VISION_MODELS[model]['provider']
     if provider == 'OpenAI':
+        return response.choices[0].message.content
+    elif provider == 'HuggingFace':
         return response.choices[0].message.content
     else:
         raise ValueError(f"Provider {provider} not supported")
