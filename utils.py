@@ -15,6 +15,30 @@ import tiktoken
 from groq import Groq
 from langchain_ollama.llms import OllamaLLM
 
+VISION_MODELS = {
+    'GPT 4o mini': {
+        'model': "gpt-4o-mini",
+        'provider':'OpenAI',
+        'price_in_token': 0.00015,
+        'price_out_token': 0.0006,
+        'max_tokens': 128000
+    },
+    'GPT 4o': {
+        'model': "gpt-4o",
+        'provider':'OpenAI',
+        'price_in_token': 0.005,
+        'price_out_token': 0.015,
+        'max_tokens': 128000
+    },
+    "HF Llama 3.2 11B-Vision-Instruct":{
+        'model': "meta-llama/Llama-3.2-11B-Vision-Instruct",
+        'provider':'HuggingFace',
+        'price_in_token': 0.0003,
+        'price_out_token': 0.0006,
+        'max_tokens': 1024
+    }
+}
+
 MODELS = {
     'GPT 4o mini': {
         'model': "gpt-4o-mini",
@@ -145,7 +169,7 @@ def generateImage(model, client, model_engine, prompt, resolution, quality):
         return requests.post(
             f"https://api.stability.ai/v2beta/stable-image/generate/sd3",
             headers={
-                "authorization": f"Bearer {os.environ["STABILITY_API_KEY"]}",
+                "authorization": f"Bearer {os.environ.get('STABILITY_API_KEY','{your_key_here}')}",
                 "accept": "image/*"
             },
             files={"none": ''},
@@ -162,7 +186,7 @@ def generateImage(model, client, model_engine, prompt, resolution, quality):
             headers={
                 "accept": "application/json",
                 "content-type": "application/json",
-                "authorization": f"Bearer {os.environ["LEONARDO_API_KEY"]}"
+                "authorization": f"Bearer {os.environ.get('LEONARDO_API_KEY','{your_key_here}')}"
             },
             json={
                 "alchemy": True,
@@ -190,6 +214,18 @@ def getImageResponse(model, response):
     else:
         raise ValueError(f"Provider {provider} not supported")
 
+def getVisionClient(vision_model, model_engine):
+    provider = VISION_MODELS[vision_model]['provider']
+    if provider == 'OpenAI':
+        return OpenAI()
+    elif provider == 'HuggingFace':
+        return InferenceClient(
+            model_engine,
+            api_key=os.environ.get("HFINF_API_KEY","{your_key_here}")
+        )
+    else:
+        raise ValueError(f"Provider {provider} not supported")
+
 def getLLMClient(model, model_engine):
     provider = MODELS[model]['provider']
     if provider == 'OpenAI':
@@ -197,22 +233,83 @@ def getLLMClient(model, model_engine):
     elif provider == 'Anthropic':
         return anthropic.Anthropic()
     elif provider == 'Google':
-        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+        genai.configure(api_key=os.environ.get("GEMINI_API_KEY","{your_key_here}"))
         return genai.GenerativeModel(model_engine)
     elif provider == 'Mistral':
-        return MistralClient(api_key=os.environ["MISTRAL_API_KEY"])
+        return MistralClient(api_key=os.environ.get("MISTRAL_API_KEY","{your_key_here}"))
     elif provider == 'HuggingFace':
         return InferenceClient(
             model_engine,
-            token=os.environ["HFINF_API_KEY"],
+            token=os.environ.get("HFINF_API_KEY","{your_key_here}"),
         )
     elif provider == 'Groq':
-        return Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        return Groq(api_key=os.environ.get("GROQ_API_KEY","{your_key_here}"))
     elif provider == 'localhost':
         return OllamaLLM(
             model=model_engine,
             temperature=0.9,
         )
+    else:
+        raise ValueError(f"Provider {provider} not supported")
+
+def vision(client, vision_model, vision_model_engine, base64_image, vision_prompt):
+    provider = VISION_MODELS[vision_model]['provider']
+    try:
+        if provider == 'OpenAI':
+            return client.chat.completions.create(
+                model=vision_model_engine,
+                messages=[
+                    {
+                    "role": "user",
+                    "content": [
+                        {
+                        "type": "text",
+                        "text": vision_prompt,
+                        },
+                        {
+                        "type": "image_url",
+                        "image_url": {
+                            "url":  f"data:image/jpeg;base64,{base64_image}"
+                        },
+                        },
+                    ],
+                    }
+                ],
+            )
+        elif provider == 'HuggingFace':
+            return client.chat_completion(
+                model=vision_model_engine,
+                messages=[
+                    {
+                    "role": "user",
+                    "content": [
+                        {
+                        "type": "text",
+                        "text": vision_prompt,
+                        },
+                        {
+                        "type": "image_url",
+                        "image_url": {
+                            "url":  f"data:image/jpeg;base64,{base64_image}"
+                        },
+                        },
+                    ],
+                    }
+                ],
+                max_tokens=st.session_state['max_tokens'],
+                stream=False,
+            )
+        else:
+            raise ValueError(f"Provider {provider} not supported") 
+    except Exception as e:
+        raise ValueError(f"Error invoking '{provider}' LLM VISION API. {e}")
+
+def getVisionResponse(model, response):
+    provider = VISION_MODELS[model]['provider']
+    if provider == 'OpenAI':
+        return response.choices[0].message.content
+    elif provider == 'HuggingFace':
+        return response.choices[0].message.content
     else:
         raise ValueError(f"Provider {provider} not supported")
 
@@ -422,6 +519,8 @@ def initialize():
         st.session_state.usage = {model_title:{'in':0, 'out':0, 'cost':0} for model_title,_ in MODELS.items()}
     if "messages" not in st.session_state:
         clear_messages()
+    if "selected_vision_model" not in st.session_state:
+        st.session_state["selected_vision_model"] = VISION_MODELS["GPT 4o mini"]['model']
     if "selected_model" not in st.session_state:
         st.session_state["selected_model"] = MODELS["GPT 4o mini"]['model']
     if "selected_img_model" not in st.session_state:
@@ -457,6 +556,7 @@ def display_sidebar(
         display_voice=False,
         display_voice_speed=False,
         display_skills=True,
+        display_vision_model=False
     ):
     with st.sidebar:
         if display_model:
@@ -484,6 +584,8 @@ def display_sidebar(
             st.session_state['voice'] = st.selectbox("Voice", ["alloy", "echo", "fable", "onyx", "nova", "shimmer"], index=0)
         if display_voice_speed:
             st.session_state['voice_speed'] = st.selectbox("Voice Speed", ["0.75", "1.0", "1.25", "1.5"], index=1)
+        if display_vision_model:
+            st.session_state["selected_vision_model"] = st.radio("Select Vision Model", [vision_model_title for vision_model_title,_ in VISION_MODELS.items()], index=0)
         if display_usage:
             with st.container(border=True):
                 st.write("### :orange[API Consumption]")	

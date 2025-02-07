@@ -20,7 +20,17 @@ git clone https://github.com/marquezea/LLM_playground.git
 ```sh
 cd LLM_playground
 ```
-3. Install the python libraries:
+4. Create a virtual environment
+```sh
+python -m venv venv
+```
+5. Activate the virtual environment
+```sh
+.\venv\scripts\activate.ps1 (in powershell)
+.\venv\scripts\activate.bat (in command prompt)
+.\venv\scripts\activate (in linux)
+```
+6. Install the python libraries:
 ```sh
 pip install -r requirements.txt
 ```
@@ -80,7 +90,7 @@ Save the file and run source ~/.bash_profile (or the equivalent for your shell) 
 
 To start the application use the following command:
 ```sh
-streamlit run LLM_playground
+streamlit run LLM_playground.py
 ```
 
 ## License
