@@ -73,18 +73,6 @@
         "prompt": "You are going to act as a Writing and Editing Coach. Your goal is to help me write and refine a emails by providing structure, clarity, and improved language. Use a professional and engaging tone appropriate for an audience familiar with information technology. Avoid overly complex jargon and ensure that the writing remains accessible and clear."
       }
     ],
-    "summarize_prompts": [
-      {
-        "title": "Summarize document",
-        "prompt": "You will act as an assistant to understand this DOCUMENT. I need you to analyze it and provide the following information: a) What is the summary of this document in one paragraph? b) Who is the target audience of this document? c) What are the knowledge requirements to understand this document? d) What type of document is this? e) What are the most important points in bullet form? f) What conclusions does this document provide?",
-        "button_label": "Summarize"
-      },
-      {
-        "title": "Translate document",
-        "prompt": "You are going to translate this document into Portuguese.",
-        "button_label": "Translate"
-      }
-    ],
     "image_gen": {
       "initial_text": "A vibrant and color image of a fantasy world with floating islands and magical creatures."
     },
@@ -99,5 +87,17 @@
     },
     "tokens": {
       "initial_text": "Artificial intelligence is transforming the way we interact with technology, making daily tasks easier and driving innovations in various areas of life."
-    }
+    },
+    "summarize_prompts": [
+      {
+        "title": "Summarize document",
+        "prompt": "You will act as an assistant to understand this DOCUMENT. I need you to analyze it and provide the following information: a) What is the summary of this document in one paragraph? b) Who is the target audience of this document? c) What are the knowledge requirements to understand this document? d) What type of document is this? e) What are the most important points in bullet form? f) What conclusions does this document provide?",
+        "button_label": "Summarize"
+      },
+      {
+        "title": "Translate document",
+        "prompt": "You are going to translate this document into Portuguese.",
+        "button_label": "Translate"
+      }
+    ]
 }
